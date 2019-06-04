@@ -16,10 +16,18 @@ public class Leilao implements Serializable {
         this.lances = new ArrayList<>();
     }
 
-    public void setLance(Lance lance) {
+    public void propoeLance(Lance lance) {
         lances.add(lance);
-        if (maiorValor < lance.getValor()) maiorValor = lance.getValor();
+        verificaMaiorLance(lance);
+        verificaMenorLance(lance);
+    }
+
+    private void verificaMenorLance(Lance lance) {
         if (menorValor > lance.getValor()) menorValor = lance.getValor();
+    }
+
+    private void verificaMaiorLance(Lance lance) {
+        if (maiorValor < lance.getValor()) maiorValor = lance.getValor();
     }
 
     public double getMaiorValor() {
