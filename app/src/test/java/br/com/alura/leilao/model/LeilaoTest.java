@@ -4,6 +4,8 @@ import org.junit.Test;
 
 import java.util.List;
 
+import br.com.alura.leilao.model.builder.LeilaoBuilder;
+
 import static org.junit.Assert.assertEquals;
 
 public class LeilaoTest {
@@ -159,19 +161,21 @@ public class LeilaoTest {
     @Test
     public void naoDeve_AdicionarLance_QuandoUsuarioFezCincoLances() {
         final Usuario USUARIO_PC = new Usuario("PC");
-        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 100.0));
-        COMPUTADOR.proporLance(new Lance(USUARIO_PC, 200.0));
-        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 300.0));
-        COMPUTADOR.proporLance(new Lance(USUARIO_PC, 400.0));
-        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 500.0));
-        COMPUTADOR.proporLance(new Lance(USUARIO_PC, 600.0));
-        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 700.0));
-        COMPUTADOR.proporLance(new Lance(USUARIO_PC, 800.0));
-        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 900.0));
-        COMPUTADOR.proporLance(new Lance(USUARIO_PC, 1000.0));
-        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 1100.0));
-        COMPUTADOR.proporLance(new Lance(USUARIO_PC, 1200.0));
-        int quantidadeLancesDevolvidos = COMPUTADOR.getQuantidadeLances();
+        final Leilao leilao = new LeilaoBuilder("Computador")
+                .adicionaLance(USUARIO_BOT, 100.0)
+                .adicionaLance(USUARIO_PC, 200.0)
+                .adicionaLance(USUARIO_BOT, 300.0)
+                .adicionaLance(USUARIO_PC, 400.0)
+                .adicionaLance(USUARIO_BOT, 500.0)
+                .adicionaLance(USUARIO_PC, 600.0)
+                .adicionaLance(USUARIO_BOT, 700.0)
+                .adicionaLance(USUARIO_PC, 800.0)
+                .adicionaLance(USUARIO_BOT, 900.0)
+                .adicionaLance(USUARIO_PC, 1000.0)
+                .adicionaLance(USUARIO_BOT, 1100.0)
+                .adicionaLance(USUARIO_PC, 1200.0)
+                .build();
+        int quantidadeLancesDevolvidos = leilao.getQuantidadeLances();
         assertEquals(10, quantidadeLancesDevolvidos);
     }
 }
