@@ -18,17 +18,18 @@ public class Leilao implements Serializable {
     }
 
     public void proporLance(Lance lance) {
-        final Usuario usuario = lance.getUsuario();
         if (lanceValido(lance))
-            if (!lances.isEmpty()) {
-                if (!lanceFeitoEmSequencia(usuario) && !ultrapassouLimiteDeLances(usuario))
-                    adicionaLance(lance);
-            } else adicionaLance(lance);
+            adicionaLance(lance);
     }
 
-
     private boolean lanceValido(Lance lance) {
-        return lance.getValor() > maiorValor;
+        final Usuario usuario = lance.getUsuario();
+        final double valorDoLance = lance.getValor();
+        if (valorDoLance > maiorValor)
+            if (!lances.isEmpty())
+                return !lanceFeitoEmSequencia(usuario) && !ultrapassouLimiteDeLances(usuario);
+            else return true;
+        return false;
     }
 
     private boolean lanceFeitoEmSequencia(Usuario usuario) {
