@@ -18,34 +18,48 @@ public class Leilao implements Serializable {
     }
 
     public void proporLance(Lance lance) {
-        if (lance.getValor() > maiorValor) {
+        final Usuario usuario = lance.getUsuario();
+        if (lanceValido(lance))
             if (!lances.isEmpty()) {
-                if (!lance.getUsuario().equals(pegaUsuarioDoUltimoLance())) {
+                if (!lanceFeitoEmSequencia(usuario) && !ultrapassouLimiteDeLances(usuario))
                     adicionaLance(lance);
-                    Collections.sort(lances);
-                }
             } else adicionaLance(lance);
-        }
     }
 
-    private Usuario pegaUsuarioDoUltimoLance() {
-        return lances.get(0).getUsuario();
+
+    private boolean lanceValido(Lance lance) {
+        return lance.getValor() > maiorValor;
+    }
+
+    private boolean lanceFeitoEmSequencia(Usuario usuario) {
+        final Usuario usuarioDoUltimoLance = lances.get(0).getUsuario();
+        return usuario.equals(usuarioDoUltimoLance);
+    }
+
+    private boolean ultrapassouLimiteDeLances(Usuario usuario) {
+        int quantidadeDeLancesRealizados = 1;
+        for (Lance lance : lances) {
+            if (usuario.equals(lance.getUsuario())) quantidadeDeLancesRealizados++;
+            if (quantidadeDeLancesRealizados > 5) return true;
+        }
+        return false;
     }
 
     private void adicionaLance(Lance lance) {
         lances.add(lance);
+        Collections.sort(lances);
         verificaMaiorLance(lance);
         verificaMenorLance(lance);
     }
 
     private void verificaMenorLance(Lance lance) {
-        double menorLance = lance.getValor();
-        if (menorValor > menorLance) menorValor = menorLance;
+        final double valorDoLance = lance.getValor();
+        if (menorValor > valorDoLance) menorValor = valorDoLance;
     }
 
     private void verificaMaiorLance(Lance lance) {
-        double maiorLance = lance.getValor();
-        if (maiorValor < maiorLance) maiorValor = maiorLance;
+        final double valorDoLance = lance.getValor();
+        if (maiorValor < valorDoLance) maiorValor = valorDoLance;
     }
 
     public double getMaiorValor() {

@@ -155,4 +155,23 @@ public class LeilaoTest {
         int quantidadeLancesDevolvidos = COMPUTADOR.getQuantidadeLances();
         assertEquals(3, quantidadeLancesDevolvidos);
     }
+
+    @Test
+    public void naoDeve_AdicionarLance_QuandoUsuarioFezCincoLances() {
+        final Usuario USUARIO_PC = new Usuario("PC");
+        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 100.0));
+        COMPUTADOR.proporLance(new Lance(USUARIO_PC, 200.0));
+        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 300.0));
+        COMPUTADOR.proporLance(new Lance(USUARIO_PC, 400.0));
+        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 500.0));
+        COMPUTADOR.proporLance(new Lance(USUARIO_PC, 600.0));
+        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 700.0));
+        COMPUTADOR.proporLance(new Lance(USUARIO_PC, 800.0));
+        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 900.0));
+        COMPUTADOR.proporLance(new Lance(USUARIO_PC, 1000.0));
+        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 1100.0));
+        COMPUTADOR.proporLance(new Lance(USUARIO_PC, 1200.0));
+        int quantidadeLancesDevolvidos = COMPUTADOR.getQuantidadeLances();
+        assertEquals(10, quantidadeLancesDevolvidos);
+    }
 }
