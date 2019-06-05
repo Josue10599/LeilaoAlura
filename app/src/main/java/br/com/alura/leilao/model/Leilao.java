@@ -24,19 +24,23 @@ public class Leilao implements Serializable {
     }
 
     private void verificaMenorLance(Lance lance) {
-        if (menorValor > lance.getValor()) menorValor = lance.getValor();
+        double menorLance = lance.getValor();
+        if (menorValor > menorLance) menorValor = menorLance;
     }
 
     private void verificaMaiorLance(Lance lance) {
-        if (maiorValor < lance.getValor()) maiorValor = lance.getValor();
+        double maiorLance = lance.getValor();
+        if (maiorValor < maiorLance) maiorValor = maiorLance;
     }
 
     public double getMaiorValor() {
-        return this.maiorValor;
+        if (maiorValor != Double.NEGATIVE_INFINITY) return this.maiorValor;
+        return 0;
     }
 
     public double getMenorValor() {
-        return this.menorValor;
+        if (menorValor != Double.POSITIVE_INFINITY) return this.menorValor;
+        return 0;
     }
 
     public String getDescricao() {

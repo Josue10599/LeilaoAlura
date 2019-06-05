@@ -142,4 +142,16 @@ public class LeilaoTest {
         assertEquals(1200.0, tresMaioresLancesDevolvidosComOitoLances.get(1).getValor(), DELTA);
         assertEquals(1000.0, tresMaioresLancesDevolvidosComOitoLances.get(2).getValor(), DELTA);
     }
+
+    @Test
+    public void deve_DevolverZeroParaMaiorLance_QuandoNaoTiverLance() {
+        double maiorValorDevolvido = COMPUTADOR.getMaiorValor();
+        assertEquals(0, maiorValorDevolvido, DELTA);
+    }
+
+    @Test
+    public void deve_DevolverZeroParaMenorLance_QuandoNaoTiverLance() {
+        double menorValorDevolvido = COMPUTADOR.getMenorValor();
+        assertEquals(0, menorValorDevolvido, DELTA);
+    }
 }
