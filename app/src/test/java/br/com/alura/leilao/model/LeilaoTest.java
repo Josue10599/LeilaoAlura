@@ -144,4 +144,15 @@ public class LeilaoTest {
         int quantidadeLancesDevolvida = COMPUTADOR.getQuantidadeLances();
         assertEquals(1, quantidadeLancesDevolvida);
     }
+
+    @Test
+    public void naoDeve_AdicionarLance_QuandoForMesmoUsuarioDoUltimoLance() {
+        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 5000.0));
+        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 10000.0));
+        COMPUTADOR.proporLance(new Lance(new Usuario("PC"), 12000.0));
+        COMPUTADOR.proporLance(new Lance(new Usuario("Bot"), 15000.0));
+        COMPUTADOR.proporLance(new Lance(new Usuario("Bot"), 15100.0));
+        int quantidadeLancesDevolvidos = COMPUTADOR.getQuantidadeLances();
+        assertEquals(3, quantidadeLancesDevolvidos);
+    }
 }
