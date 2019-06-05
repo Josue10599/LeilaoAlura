@@ -22,7 +22,7 @@ public class LeilaoTest {
      */
 
     @Test
-    public void deve_DevolverDescrição_QuandoRecebeUmaDescricao() {
+    public void deve_DevolverDescricao_QuandoRecebeUmaDescricao() {
         // Criação de ambiente de Teste
         Leilao console = new Leilao("Console");
         // Executar ação esperada
@@ -34,7 +34,7 @@ public class LeilaoTest {
     @Test
     public void deve_DevolverMaiorValor_QuandoRecebeUmLance() {
         // Criação de ambiente de Teste
-        COMPUTADOR.propoeLance(new Lance(USUARIO_BOT, 200.0));
+        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 200.0));
         // Executar ação esperada
         double maiorValorDevolvido = COMPUTADOR.getMaiorValor();
         // Testar o resultado esperado
@@ -47,52 +47,34 @@ public class LeilaoTest {
 
     @Test
     public void deve_DevolverMaiorValor_QuandoRecebeLancesEmOrdemCrescente() {
-        COMPUTADOR.propoeLance(new Lance(USUARIO_BOT, 10.0));
-        COMPUTADOR.propoeLance(new Lance(new Usuario("Pc"), 100.0));
-        COMPUTADOR.propoeLance(new Lance(new Usuario("Mac"), 1000.0));
-        double maiorValorDevolvido = COMPUTADOR.getMaiorValor();
-        assertEquals(1000.0, maiorValorDevolvido, DELTA);
-    }
-
-    @Test
-    public void deve_DevolverMaiorValor_QuandoRecebeLancesEmOrdemDescrescente() {
-        COMPUTADOR.propoeLance(new Lance(USUARIO_BOT, 1000.0));
-        COMPUTADOR.propoeLance(new Lance(new Usuario("Pc"), 500.0));
-        COMPUTADOR.propoeLance(new Lance(new Usuario("Mac"), 100.0));
+        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 10.0));
+        COMPUTADOR.proporLance(new Lance(new Usuario("Pc"), 100.0));
+        COMPUTADOR.proporLance(new Lance(new Usuario("Mac"), 1000.0));
         double maiorValorDevolvido = COMPUTADOR.getMaiorValor();
         assertEquals(1000.0, maiorValorDevolvido, DELTA);
     }
 
     @Test
     public void deve_DevolverMenorValor_QuandoRecebeUmLance() {
-        COMPUTADOR.propoeLance(new Lance(USUARIO_BOT, 100.0));
+        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 100.0));
         double menorValorDevolvido = COMPUTADOR.getMenorValor();
         assertEquals(100.0, menorValorDevolvido, DELTA);
     }
 
     @Test
     public void deve_DevolverMenorValor_QuandoRecebeLancesEmOrdemCrescente() {
-        COMPUTADOR.propoeLance(new Lance(USUARIO_BOT, 10.0));
-        COMPUTADOR.propoeLance(new Lance(new Usuario("Pc"), 100.0));
-        COMPUTADOR.propoeLance(new Lance(new Usuario("Mac"), 1000.0));
+        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 10.0));
+        COMPUTADOR.proporLance(new Lance(new Usuario("Pc"), 100.0));
+        COMPUTADOR.proporLance(new Lance(new Usuario("Mac"), 1000.0));
         double menorValorDevolvido = COMPUTADOR.getMenorValor();
         assertEquals(10.0, menorValorDevolvido, DELTA);
     }
 
     @Test
-    public void deve_DevolverMenorValor_QuandoRecebeLancesEmOrdemDescrescente() {
-        COMPUTADOR.propoeLance(new Lance(USUARIO_BOT, 1000.0));
-        COMPUTADOR.propoeLance(new Lance(new Usuario("Pc"), 500.0));
-        COMPUTADOR.propoeLance(new Lance(new Usuario("Mac"), 100.0));
-        double menorValorDevolvido = COMPUTADOR.getMenorValor();
-        assertEquals(100.0, menorValorDevolvido, DELTA);
-    }
-
-    @Test
     public void deve_DevolverTresMaioresValores_QuandoRecebeTresLances() {
-        COMPUTADOR.propoeLance(new Lance(USUARIO_BOT, 500.0));
-        COMPUTADOR.propoeLance(new Lance(new Usuario("PC"), 750.0));
-        COMPUTADOR.propoeLance(new Lance(USUARIO_BOT, 1000.0));
+        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 500.0));
+        COMPUTADOR.proporLance(new Lance(new Usuario("PC"), 750.0));
+        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 1000.0));
         List<Lance> maioresLancesDevolvidos = COMPUTADOR.getTresMaioresLances();
         assertEquals(3, maioresLancesDevolvidos.size());
         assertEquals(1000.0, maioresLancesDevolvidos.get(0).getValor(), DELTA);
@@ -108,8 +90,8 @@ public class LeilaoTest {
 
     @Test
     public void deve_DevolverTresMaioresValores_QuandoRecebeDoisLances() {
-        COMPUTADOR.propoeLance(new Lance(USUARIO_BOT, 500.0));
-        COMPUTADOR.propoeLance(new Lance(new Usuario("PC"), 750.0));
+        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 500.0));
+        COMPUTADOR.proporLance(new Lance(new Usuario("PC"), 750.0));
         List<Lance> tresMaioresLancesDevolvidos = COMPUTADOR.getTresMaioresLances();
         assertEquals(2, tresMaioresLancesDevolvidos.size());
         assertEquals(750.0, tresMaioresLancesDevolvidos.get(0).getValor(), DELTA);
@@ -118,10 +100,10 @@ public class LeilaoTest {
 
     @Test
     public void deve_DevolverTresMaioresValores_QuandoRecebeVariosLances() {
-        COMPUTADOR.propoeLance(new Lance(USUARIO_BOT, 100.0));
-        COMPUTADOR.propoeLance(new Lance(new Usuario("PC"), 200.0));
-        COMPUTADOR.propoeLance(new Lance(USUARIO_BOT, 500.0));
-        COMPUTADOR.propoeLance(new Lance(new Usuario("PC"), 700.0));
+        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 100.0));
+        COMPUTADOR.proporLance(new Lance(new Usuario("PC"), 200.0));
+        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 500.0));
+        COMPUTADOR.proporLance(new Lance(new Usuario("PC"), 700.0));
 
         List<Lance> tresMaioresLancesDevolvidosComQuatroLances = COMPUTADOR.getTresMaioresLances();
 
@@ -130,10 +112,10 @@ public class LeilaoTest {
         assertEquals(500.0, tresMaioresLancesDevolvidosComQuatroLances.get(1).getValor(), DELTA);
         assertEquals(200.0, tresMaioresLancesDevolvidosComQuatroLances.get(2).getValor(), DELTA);
 
-        COMPUTADOR.propoeLance(new Lance(USUARIO_BOT, 800.0));
-        COMPUTADOR.propoeLance(new Lance(new Usuario("PC"), 1000.0));
-        COMPUTADOR.propoeLance(new Lance(USUARIO_BOT, 1200.0));
-        COMPUTADOR.propoeLance(new Lance(new Usuario("PC"), 1500.0));
+        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 800.0));
+        COMPUTADOR.proporLance(new Lance(new Usuario("PC"), 1000.0));
+        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 1200.0));
+        COMPUTADOR.proporLance(new Lance(new Usuario("PC"), 1500.0));
 
         List<Lance> tresMaioresLancesDevolvidosComOitoLances = COMPUTADOR.getTresMaioresLances();
 
@@ -153,5 +135,13 @@ public class LeilaoTest {
     public void deve_DevolverZeroParaMenorLance_QuandoNaoTiverLance() {
         double menorValorDevolvido = COMPUTADOR.getMenorValor();
         assertEquals(0, menorValorDevolvido, DELTA);
+    }
+
+    @Test
+    public void naoDeve_AdicionarLance_QuandoForMenorQueMaiorLance() {
+        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 1000.0));
+        COMPUTADOR.proporLance(new Lance(new Usuario("PC"), 500.0));
+        int quantidadeLancesDevolvida = COMPUTADOR.getQuantidadeLances();
+        assertEquals(1, quantidadeLancesDevolvida);
     }
 }

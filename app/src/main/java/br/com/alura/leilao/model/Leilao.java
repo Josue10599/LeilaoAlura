@@ -17,8 +17,8 @@ public class Leilao implements Serializable {
         this.lances = new ArrayList<>();
     }
 
-    public void propoeLance(Lance lance) {
-        lances.add(lance);
+    public void proporLance(Lance lance) {
+        if (lance.getValor() > maiorValor) lances.add(lance);
         verificaMaiorLance(lance);
         verificaMenorLance(lance);
     }
@@ -51,5 +51,9 @@ public class Leilao implements Serializable {
         Collections.sort(lances);
         if (lances.size() > 3) return lances.subList(0, 3);
         return lances.subList(0, lances.size());
+    }
+
+    public int getQuantidadeLances() {
+        return lances.size();
     }
 }
