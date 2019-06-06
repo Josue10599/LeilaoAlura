@@ -1,5 +1,6 @@
 package br.com.alura.leilao.model;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import java.util.List;
@@ -9,7 +10,13 @@ import br.com.alura.leilao.exception.LimiteDeLancesException;
 import br.com.alura.leilao.exception.ValorMenorQueUltimoDoLanceException;
 import br.com.alura.leilao.model.builder.LeilaoBuilder;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.core.CombinableMatcher.both;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 public class LeilaoTest {
 
@@ -56,14 +63,14 @@ public class LeilaoTest {
         COMPUTADOR.proporLance(new Lance(new Usuario("Pc"), 100.0));
         COMPUTADOR.proporLance(new Lance(new Usuario("Mac"), 1000.0));
         double maiorValorDevolvido = COMPUTADOR.getMaiorValor();
-        assertEquals(1000.0, maiorValorDevolvido, DELTA);
+        assertThat(maiorValorDevolvido, is(closeTo(1000.0, DELTA)));
     }
 
     @Test
     public void deve_DevolverMenorValor_QuandoRecebeUmLance() {
         COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 100.0));
         double menorValorDevolvido = COMPUTADOR.getMenorValor();
-        assertEquals(100.0, menorValorDevolvido, DELTA);
+        assertThat(menorValorDevolvido, is(closeTo(100.0, DELTA)));
     }
 
     @Test
@@ -72,7 +79,7 @@ public class LeilaoTest {
         COMPUTADOR.proporLance(new Lance(new Usuario("Pc"), 100.0));
         COMPUTADOR.proporLance(new Lance(new Usuario("Mac"), 1000.0));
         double menorValorDevolvido = COMPUTADOR.getMenorValor();
-        assertEquals(10.0, menorValorDevolvido, DELTA);
+        assertThat(menorValorDevolvido, is(closeTo(10.0, DELTA)));
     }
 
     @Test
@@ -81,16 +88,11 @@ public class LeilaoTest {
         COMPUTADOR.proporLance(new Lance(new Usuario("PC"), 750.0));
         COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 1000.0));
         List<Lance> maioresLancesDevolvidos = COMPUTADOR.getTresMaioresLances();
-        assertEquals(3, maioresLancesDevolvidos.size());
-        assertEquals(1000.0, maioresLancesDevolvidos.get(0).getValor(), DELTA);
-        assertEquals(750.0, maioresLancesDevolvidos.get(1).getValor(), DELTA);
-        assertEquals(500.0, maioresLancesDevolvidos.get(2).getValor(), DELTA);
-    }
-
-    @Test
-    public void deve_DevolverTresMaioresValores_QuandoRecebeUmLance() {
-        List<Lance> tresMaioresLancesDevolvidos = COMPUTADOR.getTresMaioresLances();
-        assertEquals(0, tresMaioresLancesDevolvidos.size());
+        assertThat(maioresLancesDevolvidos, both(Matchers.<Lance>hasSize(3)).and(contains(
+                new Lance(USUARIO_BOT, 1000.0),
+                new Lance(new Usuario("PC"), 750.0),
+                new Lance(USUARIO_BOT, 500.0)
+        )));
     }
 
     @Test
@@ -98,9 +100,10 @@ public class LeilaoTest {
         COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 500.0));
         COMPUTADOR.proporLance(new Lance(new Usuario("PC"), 750.0));
         List<Lance> tresMaioresLancesDevolvidos = COMPUTADOR.getTresMaioresLances();
-        assertEquals(2, tresMaioresLancesDevolvidos.size());
-        assertEquals(750.0, tresMaioresLancesDevolvidos.get(0).getValor(), DELTA);
-        assertEquals(500.0, tresMaioresLancesDevolvidos.get(1).getValor(), DELTA);
+        assertThat(tresMaioresLancesDevolvidos, both(Matchers.<Lance>hasSize(2)).and(contains(
+                new Lance(new Usuario("PC"), 750.0),
+                new Lance(USUARIO_BOT, 500.0)
+        )));
     }
 
     @Test
@@ -109,37 +112,25 @@ public class LeilaoTest {
         COMPUTADOR.proporLance(new Lance(new Usuario("PC"), 200.0));
         COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 500.0));
         COMPUTADOR.proporLance(new Lance(new Usuario("PC"), 700.0));
-
         List<Lance> tresMaioresLancesDevolvidosComQuatroLances = COMPUTADOR.getTresMaioresLances();
-
-        assertEquals(3, tresMaioresLancesDevolvidosComQuatroLances.size());
-        assertEquals(700.0, tresMaioresLancesDevolvidosComQuatroLances.get(0).getValor(), DELTA);
-        assertEquals(500.0, tresMaioresLancesDevolvidosComQuatroLances.get(1).getValor(), DELTA);
-        assertEquals(200.0, tresMaioresLancesDevolvidosComQuatroLances.get(2).getValor(), DELTA);
-
-        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 800.0));
-        COMPUTADOR.proporLance(new Lance(new Usuario("PC"), 1000.0));
-        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 1200.0));
-        COMPUTADOR.proporLance(new Lance(new Usuario("PC"), 1500.0));
-
-        List<Lance> tresMaioresLancesDevolvidosComOitoLances = COMPUTADOR.getTresMaioresLances();
-
-        assertEquals(3, tresMaioresLancesDevolvidosComOitoLances.size());
-        assertEquals(1500.0, tresMaioresLancesDevolvidosComOitoLances.get(0).getValor(), DELTA);
-        assertEquals(1200.0, tresMaioresLancesDevolvidosComOitoLances.get(1).getValor(), DELTA);
-        assertEquals(1000.0, tresMaioresLancesDevolvidosComOitoLances.get(2).getValor(), DELTA);
+        assertThat(tresMaioresLancesDevolvidosComQuatroLances, both(
+                Matchers.<Lance>hasSize(equalTo(3))).and(contains(
+                new Lance(new Usuario("PC"), 700.0),
+                new Lance(USUARIO_BOT, 500.0),
+                new Lance(new Usuario("PC"), 200.0)
+        )));
     }
 
     @Test
     public void deve_DevolverZeroParaMaiorLance_QuandoNaoTiverLance() {
         double maiorValorDevolvido = COMPUTADOR.getMaiorValor();
-        assertEquals(0, maiorValorDevolvido, DELTA);
+        assertThat(maiorValorDevolvido, is(closeTo(0, DELTA)));
     }
 
     @Test
     public void deve_DevolverZeroParaMenorLance_QuandoNaoTiverLance() {
         double menorValorDevolvido = COMPUTADOR.getMenorValor();
-        assertEquals(0, menorValorDevolvido, DELTA);
+        assertThat(menorValorDevolvido, is(closeTo(0, DELTA)));
     }
 
     @Test(expected = ValorMenorQueUltimoDoLanceException.class)
@@ -159,7 +150,7 @@ public class LeilaoTest {
     @Test(expected = LimiteDeLancesException.class)
     public void naoDeve_AdicionarLance_QuandoUsuarioFezCincoLances() {
         final Usuario USUARIO_PC = new Usuario("PC");
-        final Leilao leilao = new LeilaoBuilder("Computador")
+        new LeilaoBuilder("Computador")
                 .adicionaLance(USUARIO_BOT, 100.0)
                 .adicionaLance(USUARIO_PC, 200.0)
                 .adicionaLance(USUARIO_BOT, 300.0)
@@ -170,7 +161,6 @@ public class LeilaoTest {
                 .adicionaLance(USUARIO_PC, 800.0)
                 .adicionaLance(USUARIO_BOT, 900.0)
                 .adicionaLance(USUARIO_PC, 1000.0)
-                .adicionaLance(USUARIO_BOT, 1100.0)
-                .build();
+                .adicionaLance(USUARIO_BOT, 1100.0);
     }
 }
