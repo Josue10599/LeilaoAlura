@@ -11,6 +11,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import br.com.alura.leilao.R;
+import br.com.alura.leilao.format.FormataReal;
 import br.com.alura.leilao.model.Leilao;
 
 public class ListaLeilaoAdapter extends RecyclerView.Adapter<ListaLeilaoAdapter.ViewHolder> {
@@ -67,7 +68,7 @@ public class ListaLeilaoAdapter extends RecyclerView.Adapter<ListaLeilaoAdapter.
         void vincula(Leilao leilao) {
             this.leilao = leilao;
             descricao.setText(leilao.getDescricao());
-            maiorLance.setText(String.valueOf(leilao.getMaiorValor()));
+            maiorLance.setText(FormataReal.formataValor(leilao.getMaiorValor()));
         }
 
     }

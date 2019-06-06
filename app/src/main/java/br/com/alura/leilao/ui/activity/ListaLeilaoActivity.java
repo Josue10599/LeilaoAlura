@@ -40,9 +40,9 @@ public class ListaLeilaoActivity extends AppCompatActivity {
         console.proporLance(new Lance(new Usuario("Pc"), 10.00));
         console.proporLance(new Lance(new Usuario("Bot"), 300.00));
         Leilao computador = new Leilao("Computador");
-        console.proporLance(new Lance(new Usuario("Machine"), 500.00));
-        console.proporLance(new Lance(new Usuario("Pc"), 1000.00));
-        console.proporLance(new Lance(new Usuario("Bot"), 30000.00));
+        computador.proporLance(new Lance(new Usuario("Machine"), 500.00));
+        computador.proporLance(new Lance(new Usuario("Pc"), 1000.00));
+        computador.proporLance(new Lance(new Usuario("Bot"), 30000.00));
         return new ArrayList<>(Arrays.asList(
                 console, computador
         ));
