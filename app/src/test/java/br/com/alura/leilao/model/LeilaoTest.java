@@ -4,9 +4,11 @@ import org.junit.Test;
 
 import java.util.List;
 
+import br.com.alura.leilao.exception.LancesSeguidosException;
+import br.com.alura.leilao.exception.LimiteDeLancesException;
+import br.com.alura.leilao.exception.ValorMenorQueUltimoDoLanceException;
 import br.com.alura.leilao.model.builder.LeilaoBuilder;
 
-import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
 
 public class LeilaoTest {
@@ -140,31 +142,21 @@ public class LeilaoTest {
         assertEquals(0, menorValorDevolvido, DELTA);
     }
 
-    @Test
+    @Test(expected = ValorMenorQueUltimoDoLanceException.class)
     public void naoDeve_AdicionarLance_QuandoForMenorQueMaiorLance() {
         COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 1000.0));
-        try {
-            COMPUTADOR.proporLance(new Lance(new Usuario("PC"), 500.0));
-            fail("Era esperada uma RuntimeException");
-        } catch (RuntimeException exception) {
-            assertEquals("Lance menor que o maior", exception.getMessage());
-        }
+        COMPUTADOR.proporLance(new Lance(new Usuario("PC"), 500.0));
     }
 
-    @Test
+    @Test(expected = LancesSeguidosException.class)
     public void naoDeve_AdicionarLance_QuandoForMesmoUsuarioDoUltimoLance() {
         COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 5000.0));
         COMPUTADOR.proporLance(new Lance(new Usuario("PC"), 12000.0));
         COMPUTADOR.proporLance(new Lance(new Usuario("Bot"), 15000.0));
-        try {
-            COMPUTADOR.proporLance(new Lance(new Usuario("Bot"), 15100.0));
-            fail("Era esperada uma RuntimeException");
-        } catch (RuntimeException exception) {
-            assertEquals("O usuário deu lances seguidos", exception.getMessage());
-        }
+        COMPUTADOR.proporLance(new Lance(new Usuario("Bot"), 15100.0));
     }
 
-    @Test
+    @Test(expected = LimiteDeLancesException.class)
     public void naoDeve_AdicionarLance_QuandoUsuarioFezCincoLances() {
         final Usuario USUARIO_PC = new Usuario("PC");
         final Leilao leilao = new LeilaoBuilder("Computador")
@@ -178,12 +170,7 @@ public class LeilaoTest {
                 .adicionaLance(USUARIO_PC, 800.0)
                 .adicionaLance(USUARIO_BOT, 900.0)
                 .adicionaLance(USUARIO_PC, 1000.0)
+                .adicionaLance(USUARIO_BOT, 1100.0)
                 .build();
-        try {
-            leilao.proporLance(new Lance(USUARIO_BOT, 1100.0));
-            fail("Era esperada uma RuntimeException");
-        } catch (RuntimeException exception) {
-            assertEquals("Usuário deu mais do que 5 lances", exception.getMessage());
-        }
     }
 }
