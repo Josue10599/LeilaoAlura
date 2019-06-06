@@ -25,11 +25,15 @@ public class Leilao implements Serializable {
     private boolean lanceValido(Lance lance) {
         final Usuario usuario = lance.getUsuario();
         final double valorDoLance = lance.getValor();
-        if (valorDoLance > maiorValor)
-            if (!lances.isEmpty())
-                return !lanceFeitoEmSequencia(usuario) && !ultrapassouLimiteDeLances(usuario);
-            else return true;
-        return false;
+        if (valorDoLance > maiorValor) {
+            if (!lances.isEmpty()) {
+                if (lanceFeitoEmSequencia(usuario))
+                    throw new RuntimeException("O usuário deu lances seguidos");
+                else if (ultrapassouLimiteDeLances(usuario))
+                    throw new RuntimeException("Usuário deu mais do que 5 lances");
+                else return true;
+            } else return true;
+        } else throw new RuntimeException("Lance menor que o maior");
     }
 
     private boolean lanceFeitoEmSequencia(Usuario usuario) {
