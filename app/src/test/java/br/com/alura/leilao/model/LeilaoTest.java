@@ -5,162 +5,190 @@ import org.junit.Test;
 
 import java.util.List;
 
-import br.com.alura.leilao.exception.LancesSeguidosException;
-import br.com.alura.leilao.exception.LimiteDeLancesException;
-import br.com.alura.leilao.exception.ValorMenorQueUltimoDoLanceException;
-import br.com.alura.leilao.model.builder.LeilaoBuilder;
+import br.com.alura.leilao.exception.LanceMenorQueUltimoLanceException;
+import br.com.alura.leilao.exception.LanceSeguidoDoMesmoUsuarioException;
+import br.com.alura.leilao.exception.UsuarioJaDeuCincoLancesException;
 
+import static org.hamcrest.CoreMatchers.both;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.core.CombinableMatcher.both;
+import static org.hamcrest.number.IsCloseTo.closeTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public class LeilaoTest {
 
     private static final double DELTA = 0.0001;
-    private final Leilao COMPUTADOR = new Leilao("Computador");
-    private final Usuario USUARIO_BOT = new Usuario("Bot");
-
-    /**
-     * Para padronizar e melhor descrever o que um método faz a comunidade Java criou alguns padrões
-     * para boas práticas na implementação de teste, uma delas é a nomeação descritiva dos métodos,
-     * onde há alguns padrões como:
-     * <p>
-     * - [nome do método][estado de teste][resultado esperado]
-     * - [deve][resultado esperado][estado de teste]
-     */
+    private final Leilao CONSOLE = new Leilao("Console");
+    private final Usuario ALEX = new Usuario("Alex");
 
     @Test
-    public void deve_DevolverDescricao_QuandoRecebeUmaDescricao() {
-        // Criação de ambiente de Teste
-        Leilao console = new Leilao("Console");
-        // Executar ação esperada
-        String descricaoRecebida = console.getDescricao();
-        // Testar o resultado esperado
-        assertEquals("Console", descricaoRecebida);
+    public void deve_DevolveDescricao_QuandoRecebeDescricao() {
+        String descricaoDevolvida = CONSOLE.getDescricao();
+
+        assertThat(descricaoDevolvida, is(equalTo("Console")));
     }
 
     @Test
-    public void deve_DevolverMaiorValor_QuandoRecebeUmLance() {
-        // Criação de ambiente de Teste
-        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 200.0));
-        // Executar ação esperada
-        double maiorValorDevolvido = COMPUTADOR.getMaiorValor();
-        // Testar o resultado esperado
-        assertEquals(200.0, maiorValorDevolvido, DELTA);
-        /*DELTA = o Delta é o valor utilizado para a comparação de números com pontos flutuantes
-        com ele colocamos uma margem de diferença que pode haver entre os dois valores passados,
-        para que o COMPUTADOR entenda como números iguais, ou seja, se o delta que passamos for
-        maior que a diferença entre o dois números que comparamos significa que eles são equivalentes.*/
+    public void deve_DevolveMaiorLance_QuandoRecebeApenasUmLance() {
+        CONSOLE.propoe(new Lance(ALEX, 200.0));
+
+        double maiorLanceDevolvido = CONSOLE.getMaiorLance();
+
+        assertThat(maiorLanceDevolvido, closeTo(200.0, DELTA));
     }
 
     @Test
-    public void deve_DevolverMaiorValor_QuandoRecebeLancesEmOrdemCrescente() {
-        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 10.0));
-        COMPUTADOR.proporLance(new Lance(new Usuario("Pc"), 100.0));
-        COMPUTADOR.proporLance(new Lance(new Usuario("Mac"), 1000.0));
-        double maiorValorDevolvido = COMPUTADOR.getMaiorValor();
-        assertThat(maiorValorDevolvido, is(closeTo(1000.0, DELTA)));
+    public void deve_DevolveMaiorLance_QuandoRecebeMaisDeUmLanceEmOrdemCrescente() {
+        CONSOLE.propoe(new Lance(ALEX, 100.0));
+        CONSOLE.propoe(new Lance(new Usuario("Fran"), 200.0));
+
+        double maiorLanceDevolvido = CONSOLE.getMaiorLance();
+
+        assertEquals(200.0, maiorLanceDevolvido, DELTA);
     }
 
     @Test
-    public void deve_DevolverMenorValor_QuandoRecebeUmLance() {
-        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 100.0));
-        double menorValorDevolvido = COMPUTADOR.getMenorValor();
-        assertThat(menorValorDevolvido, is(closeTo(100.0, DELTA)));
+    public void deve_DevolveMenorLance_QuandoRecebeApenasUmLance() {
+        CONSOLE.propoe(new Lance(ALEX, 200.0));
+
+        double menorLanceDevolvido = CONSOLE.getMenorLance();
+
+        assertEquals(200.0, menorLanceDevolvido, DELTA);
     }
 
     @Test
-    public void deve_DevolverMenorValor_QuandoRecebeLancesEmOrdemCrescente() {
-        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 10.0));
-        COMPUTADOR.proporLance(new Lance(new Usuario("Pc"), 100.0));
-        COMPUTADOR.proporLance(new Lance(new Usuario("Mac"), 1000.0));
-        double menorValorDevolvido = COMPUTADOR.getMenorValor();
-        assertThat(menorValorDevolvido, is(closeTo(10.0, DELTA)));
+    public void deve_DevolveMenorLance_QuandoRecebeMaisDeUmLanceEmOrdemCrescente() {
+        CONSOLE.propoe(new Lance(ALEX, 100.0));
+        CONSOLE.propoe(new Lance(new Usuario("Fran"), 200.0));
+
+        double menorLanceDevolvido = CONSOLE.getMenorLance();
+
+        assertEquals(100.0, menorLanceDevolvido, DELTA);
     }
 
     @Test
-    public void deve_DevolverTresMaioresValores_QuandoRecebeTresLances() {
-        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 500.0));
-        COMPUTADOR.proporLance(new Lance(new Usuario("PC"), 750.0));
-        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 1000.0));
-        List<Lance> maioresLancesDevolvidos = COMPUTADOR.getTresMaioresLances();
-        assertThat(maioresLancesDevolvidos, both(Matchers.<Lance>hasSize(3)).and(contains(
-                new Lance(USUARIO_BOT, 1000.0),
-                new Lance(new Usuario("PC"), 750.0),
-                new Lance(USUARIO_BOT, 500.0)
-        )));
+    public void deve_DevolverTresMaioresLances_QuandoRecebeExatosTresLances() {
+        CONSOLE.propoe(new Lance(ALEX, 200.0));
+        CONSOLE.propoe(new Lance(new Usuario("Fran"), 300.0));
+        CONSOLE.propoe(new Lance(ALEX, 400.0));
+
+        List<Lance> tresMaioresLancesDevolvidos = CONSOLE.tresMaioresLances();
+
+        assertThat(tresMaioresLancesDevolvidos,
+                both(Matchers.<Lance>hasSize(3))
+                        .and(contains(
+                                new Lance(ALEX, 400.0),
+                                new Lance(new Usuario("Fran"), 300.0),
+                                new Lance(ALEX, 200.0))));
+
     }
 
     @Test
-    public void deve_DevolverTresMaioresValores_QuandoRecebeDoisLances() {
-        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 500.0));
-        COMPUTADOR.proporLance(new Lance(new Usuario("PC"), 750.0));
-        List<Lance> tresMaioresLancesDevolvidos = COMPUTADOR.getTresMaioresLances();
-        assertThat(tresMaioresLancesDevolvidos, both(Matchers.<Lance>hasSize(2)).and(contains(
-                new Lance(new Usuario("PC"), 750.0),
-                new Lance(USUARIO_BOT, 500.0)
-        )));
+    public void deve_DevolverTresMaioresLances_QuandoNaoRecebeLances() {
+        List<Lance> tresMaioresLancesDevolvidos = CONSOLE.tresMaioresLances();
+
+        assertEquals(0, tresMaioresLancesDevolvidos.size());
     }
 
     @Test
-    public void deve_DevolverTresMaioresValores_QuandoRecebeVariosLances() {
-        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 100.0));
-        COMPUTADOR.proporLance(new Lance(new Usuario("PC"), 200.0));
-        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 500.0));
-        COMPUTADOR.proporLance(new Lance(new Usuario("PC"), 700.0));
-        List<Lance> tresMaioresLancesDevolvidosComQuatroLances = COMPUTADOR.getTresMaioresLances();
-        assertThat(tresMaioresLancesDevolvidosComQuatroLances, both(
-                Matchers.<Lance>hasSize(equalTo(3))).and(contains(
-                new Lance(new Usuario("PC"), 700.0),
-                new Lance(USUARIO_BOT, 500.0),
-                new Lance(new Usuario("PC"), 200.0)
-        )));
+    public void deve_DevolverTresMaioresLances_QuandoRecebeApenasUmLance() {
+        CONSOLE.propoe(new Lance(ALEX, 200.0));
+
+        List<Lance> tresMaioresLancesDevolvidos = CONSOLE.tresMaioresLances();
+
+        assertEquals(1, tresMaioresLancesDevolvidos.size());
+        assertEquals(200.0,
+                tresMaioresLancesDevolvidos.get(0).getValor(), DELTA);
     }
 
     @Test
-    public void deve_DevolverZeroParaMaiorLance_QuandoNaoTiverLance() {
-        double maiorValorDevolvido = COMPUTADOR.getMaiorValor();
-        assertThat(maiorValorDevolvido, is(closeTo(0, DELTA)));
+    public void deve_DevolverTresMaioresLances_QuandoRecebeApenasDoisLances() {
+        CONSOLE.propoe(new Lance(ALEX, 300.0));
+        CONSOLE.propoe(new Lance(new Usuario("Fran"), 400.0));
+
+        List<Lance> tresMaioresLancesDevolvidos = CONSOLE.tresMaioresLances();
+
+        assertEquals(2, tresMaioresLancesDevolvidos.size());
+        assertEquals(400.0,
+                tresMaioresLancesDevolvidos.get(0).getValor(), DELTA);
+        assertEquals(300.0,
+                tresMaioresLancesDevolvidos.get(1).getValor(), DELTA);
     }
 
     @Test
-    public void deve_DevolverZeroParaMenorLance_QuandoNaoTiverLance() {
-        double menorValorDevolvido = COMPUTADOR.getMenorValor();
-        assertThat(menorValorDevolvido, is(closeTo(0, DELTA)));
+    public void deve_DevolverTresMaioresLances_QuandoRecebeMaisDeTresLances() {
+        CONSOLE.propoe(new Lance(ALEX, 300.0));
+        final Usuario FRAN = new Usuario("Fran");
+        CONSOLE.propoe(new Lance(FRAN, 400.0));
+        CONSOLE.propoe(new Lance(ALEX, 500.0));
+        CONSOLE.propoe(new Lance(FRAN, 600.0));
+
+        final List<Lance> tresMaioresLancesDevolvidosParaQuatroLances =
+                CONSOLE.tresMaioresLances();
+
+        assertEquals(3, tresMaioresLancesDevolvidosParaQuatroLances.size());
+        assertEquals(600.0,
+                tresMaioresLancesDevolvidosParaQuatroLances.get(0).getValor(), DELTA);
+        assertEquals(500.0,
+                tresMaioresLancesDevolvidosParaQuatroLances.get(1).getValor(), DELTA);
+        assertEquals(400.0,
+                tresMaioresLancesDevolvidosParaQuatroLances.get(2).getValor(), DELTA);
+
+        CONSOLE.propoe(new Lance(ALEX, 700.0));
+
+        final List<Lance> tresMaioresLancesDevolvidosParaCincoLances =
+                CONSOLE.tresMaioresLances();
+
+        assertEquals(3, tresMaioresLancesDevolvidosParaCincoLances.size());
+        assertEquals(700.0,
+                tresMaioresLancesDevolvidosParaCincoLances.get(0).getValor(), DELTA);
+        assertEquals(600.0,
+                tresMaioresLancesDevolvidosParaCincoLances.get(1).getValor(), DELTA);
+        assertEquals(500.0,
+                tresMaioresLancesDevolvidosParaCincoLances.get(2).getValor(), DELTA);
     }
 
-    @Test(expected = ValorMenorQueUltimoDoLanceException.class)
-    public void naoDeve_AdicionarLance_QuandoForMenorQueMaiorLance() {
-        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 1000.0));
-        COMPUTADOR.proporLance(new Lance(new Usuario("PC"), 500.0));
+    @Test
+    public void deve_DevolverValorZeroParaMaiorLance_QuandoNaoTiverLances() {
+        double maiorLanceDevolvido = CONSOLE.getMaiorLance();
+        assertEquals(0.0, maiorLanceDevolvido, DELTA);
     }
 
-    @Test(expected = LancesSeguidosException.class)
-    public void naoDeve_AdicionarLance_QuandoForMesmoUsuarioDoUltimoLance() {
-        COMPUTADOR.proporLance(new Lance(USUARIO_BOT, 5000.0));
-        COMPUTADOR.proporLance(new Lance(new Usuario("PC"), 12000.0));
-        COMPUTADOR.proporLance(new Lance(new Usuario("Bot"), 15000.0));
-        COMPUTADOR.proporLance(new Lance(new Usuario("Bot"), 15100.0));
+    @Test
+    public void deve_DevolverValorZeroParaMenorLance_QuandoNaoTiverLances() {
+        double menorLanceDevolvido = CONSOLE.getMenorLance();
+
+        assertEquals(0.0, menorLanceDevolvido, DELTA);
     }
 
-    @Test(expected = LimiteDeLancesException.class)
-    public void naoDeve_AdicionarLance_QuandoUsuarioFezCincoLances() {
-        final Usuario USUARIO_PC = new Usuario("PC");
-        new LeilaoBuilder("Computador")
-                .adicionaLance(USUARIO_BOT, 100.0)
-                .adicionaLance(USUARIO_PC, 200.0)
-                .adicionaLance(USUARIO_BOT, 300.0)
-                .adicionaLance(USUARIO_PC, 400.0)
-                .adicionaLance(USUARIO_BOT, 500.0)
-                .adicionaLance(USUARIO_PC, 600.0)
-                .adicionaLance(USUARIO_BOT, 700.0)
-                .adicionaLance(USUARIO_PC, 800.0)
-                .adicionaLance(USUARIO_BOT, 900.0)
-                .adicionaLance(USUARIO_PC, 1000.0)
-                .adicionaLance(USUARIO_BOT, 1100.0);
+    @Test(expected = LanceMenorQueUltimoLanceException.class)
+    public void naoDeve_AdicionarLance_QuandoForMenorQueOMaiorLance() {
+        CONSOLE.propoe(new Lance(ALEX, 500.0));
+        CONSOLE.propoe(new Lance(new Usuario("Fran"), 400.0));
     }
+
+    @Test(expected = LanceSeguidoDoMesmoUsuarioException.class)
+    public void naoDeve_AdicionarLance_QuandoForOMesmoUsuariDoUltimoLance() {
+        CONSOLE.propoe(new Lance(ALEX, 500.0));
+        CONSOLE.propoe(new Lance(ALEX, 600.0));
+    }
+
+    @Test(expected = UsuarioJaDeuCincoLancesException.class)
+    public void naoDeve_AdicionarLance_QuandoUsuarioDerCincoLances() {
+        CONSOLE.propoe(new Lance(ALEX, 100.0));
+        final Usuario FRAN = new Usuario("Fran");
+        CONSOLE.propoe(new Lance(FRAN, 200.0));
+        CONSOLE.propoe(new Lance(ALEX, 300.0));
+        CONSOLE.propoe(new Lance(FRAN, 400.0));
+        CONSOLE.propoe(new Lance(ALEX, 500.0));
+        CONSOLE.propoe(new Lance(FRAN, 600.0));
+        CONSOLE.propoe(new Lance(ALEX, 700.0));
+        CONSOLE.propoe(new Lance(FRAN, 800.0));
+        CONSOLE.propoe(new Lance(ALEX, 900.0));
+        CONSOLE.propoe(new Lance(FRAN, 1000.0));
+        CONSOLE.propoe(new Lance(ALEX, 1100.0));
+    }
+
 }

@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import java.io.Serializable;
 
-public class Lance implements Serializable, Comparable<Lance> {
+public class Lance implements Serializable, Comparable {
 
     private final Usuario usuario;
     private final double valor;
@@ -16,6 +16,12 @@ public class Lance implements Serializable, Comparable<Lance> {
 
     public double getValor() {
         return valor;
+    }
+
+    @Override
+    public int compareTo(@NonNull Object o) {
+        Lance lance = (Lance) o;
+        return Double.compare(lance.getValor(), valor);
     }
 
     public Usuario getUsuario() {
@@ -41,10 +47,5 @@ public class Lance implements Serializable, Comparable<Lance> {
         temp = Double.doubleToLongBits(valor);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;
-    }
-
-    @Override
-    public int compareTo(@NonNull Lance lance) {
-        return Double.compare(lance.getValor(), valor);
     }
 }
