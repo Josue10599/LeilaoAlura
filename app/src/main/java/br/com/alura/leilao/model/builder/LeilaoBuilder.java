@@ -13,7 +13,7 @@ public class LeilaoBuilder {
     }
 
     public LeilaoBuilder adicionaLance(Usuario usuario, double valor) {
-        this.leilao.proporLance(new Lance(usuario, valor));
+        this.leilao.propoe(new Lance(usuario, valor));
         return this;
     }
 
