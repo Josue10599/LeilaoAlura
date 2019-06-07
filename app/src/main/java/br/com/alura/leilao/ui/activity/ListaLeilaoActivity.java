@@ -8,12 +8,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import java.util.List;
-
 import br.com.alura.leilao.R;
 import br.com.alura.leilao.api.retrofit.client.LeilaoWebClient;
-import br.com.alura.leilao.api.retrofit.client.RespostaListener;
 import br.com.alura.leilao.model.Leilao;
+import br.com.alura.leilao.ui.activity.AtualizardorDeListaLeilao.FalhaAtualizarListaListener;
 import br.com.alura.leilao.ui.recyclerview.adapter.ListaLeilaoAdapter;
 
 import static br.com.alura.leilao.ui.activity.LeilaoConstantes.CHAVE_LEILAO;
@@ -21,9 +19,10 @@ import static br.com.alura.leilao.ui.activity.LeilaoConstantes.CHAVE_LEILAO;
 
 public class ListaLeilaoActivity extends AppCompatActivity {
 
-    private static final String TITULO_APPBAR = "Leilões";
     private static final String MENSAGEM_AVISO_FALHA_AO_CARREGAR_LEILOES = "Não foi possível carregar os leilões";
+    private static final String TITULO_APPBAR = "Leilões";
     private final LeilaoWebClient client = new LeilaoWebClient();
+    private final AtualizardorDeListaLeilao pegaLista = new AtualizardorDeListaLeilao();
     private ListaLeilaoAdapter adapter;
 
     @Override
@@ -65,23 +64,17 @@ public class ListaLeilaoActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        buscaListaLeilao(this.adapter, client);
-    }
-
-    public void buscaListaLeilao(final ListaLeilaoAdapter adapter, LeilaoWebClient client) {
-        client.todos(new RespostaListener<List<Leilao>>() {
+        pegaLista.buscaListaLeilao(this.adapter, client, new FalhaAtualizarListaListener() {
             @Override
-            public void sucesso(List<Leilao> leiloes) {
-                adapter.atualiza(leiloes);
-            }
-
-            @Override
-            public void falha(String mensagem) {
-                Toast.makeText(ListaLeilaoActivity.this,
-                        MENSAGEM_AVISO_FALHA_AO_CARREGAR_LEILOES,
-                        Toast.LENGTH_SHORT).show();
+            public void falhaAtualizarLista(String mensagem) {
+                mensagemErro();
             }
         });
+    }
+
+    private void mensagemErro() {
+        Toast.makeText(this, MENSAGEM_AVISO_FALHA_AO_CARREGAR_LEILOES, Toast.LENGTH_SHORT)
+                .show();
     }
 
     @Override
