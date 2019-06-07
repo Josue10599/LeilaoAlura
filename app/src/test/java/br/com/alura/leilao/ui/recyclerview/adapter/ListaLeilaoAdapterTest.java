@@ -1,5 +1,7 @@
 package br.com.alura.leilao.ui.recyclerview.adapter;
 
+import android.content.Context;
+
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -15,10 +17,12 @@ public class ListaLeilaoAdapterTest {
 
     @Test
     public void deve_AtualizarLista_QuandoRecebeNovosValores() {
-        ListaLeilaoAdapter adapter = Mockito.spy(new ListaLeilaoAdapter(null));
+        Context context = Mockito.mock(Context.class);
+        ListaLeilaoAdapter adapter = Mockito.spy(new ListaLeilaoAdapter(context));
         Mockito.doNothing().when(adapter).atualizaLista();
         adapter.atualiza(Arrays.asList(new Leilao("Computador"), new Leilao("CD")));
         int numeroDeItensNaLista = adapter.getItemCount();
+        Mockito.verify(adapter).atualizaLista();
         assertThat(numeroDeItensNaLista, is(equalTo(2)));
     }
 }
