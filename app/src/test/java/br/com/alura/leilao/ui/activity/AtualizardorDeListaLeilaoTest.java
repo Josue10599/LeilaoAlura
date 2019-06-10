@@ -1,7 +1,5 @@
 package br.com.alura.leilao.ui.activity;
 
-import android.content.Context;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -29,8 +27,6 @@ public class AtualizardorDeListaLeilaoTest {
     private LeilaoWebClient client;
     @Mock
     private ListaLeilaoAdapter adapter;
-    @Mock
-    private Context context;
     @Mock
     private AtualizardorDeListaLeilao.FalhaAtualizarListaListener listener;
 
