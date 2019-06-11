@@ -1,6 +1,7 @@
 package br.com.alura.leilao.ui.activity;
 
 import android.content.Intent;
+import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.rule.ActivityTestRule;
 
 import org.junit.After;
@@ -68,6 +69,25 @@ public class ListaLeilaoScreenTest {
                 leilaoApresentado(0, "Carro", 0.00)));
         onView(withId(R.id.lista_leilao_recyclerview)).check(matches(
                 leilaoApresentado(1, "Computador", 0.00)));
+    }
+
+    @Test
+    public void deve_AparecerUltimoLeilao_QuandoCarregarDezLeiloesNaApi() throws IOException {
+        tentaSalvarNaApi(new Leilao("Carro"),
+                new Leilao("Computador"),
+                new Leilao("Notebook"),
+                new Leilao("Placa de vídeo"),
+                new Leilao("Smartphone"),
+                new Leilao("Monitor LED"),
+                new Leilao("Ar condicionado"),
+                new Leilao("Humano"),
+                new Leilao("Tênis"),
+                new Leilao("Calça Jeans"));
+        activityTestRule.launchActivity(new Intent());
+        onView(withId(R.id.lista_leilao_recyclerview))
+                .perform(RecyclerViewActions.scrollToPosition(9))
+                .check(matches(leilaoApresentado(
+                        9, "Calça Jeans", 0.00)));
     }
 
     private void tentaSalvarNaApi(Leilao... leiloes) throws IOException {

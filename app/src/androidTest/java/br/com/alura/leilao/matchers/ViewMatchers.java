@@ -46,12 +46,13 @@ public class ViewMatchers {
             private boolean verificaSeEhMesmoMaiorLance(View viewHolder) {
                 TextView textViewMaiorLance = viewHolder.findViewById(R.id.item_leilao_maior_lance);
                 return textViewMaiorLance.getText().toString()
-                        .equals(maiorLanceFormatado);
+                        .equals(maiorLanceFormatado) && displayed.matches(textViewMaiorLance);
             }
 
             private boolean verificaSeEhMesmoLeilao(View viewHolder) {
                 TextView textViewDescricao = viewHolder.findViewById(R.id.item_leilao_descricao);
-                return textViewDescricao.getText().toString().equals(nomeDoLeilao);
+                return textViewDescricao.getText().toString().equals(nomeDoLeilao)
+                        && displayed.matches(textViewDescricao);
             }
         };
     }
