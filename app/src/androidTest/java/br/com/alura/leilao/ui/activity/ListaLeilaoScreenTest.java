@@ -12,6 +12,7 @@ import java.io.IOException;
 
 import br.com.alura.leilao.R;
 import br.com.alura.leilao.api.retrofit.client.TesteLeilaoWebClient;
+import br.com.alura.leilao.formatter.FormatadorDeMoeda;
 import br.com.alura.leilao.model.Leilao;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -19,6 +20,7 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static br.com.alura.leilao.matchers.ViewMatchers.leilaoApresentado;
 import static junit.framework.Assert.fail;
 import static org.hamcrest.core.AllOf.allOf;
 
@@ -27,7 +29,8 @@ public class ListaLeilaoScreenTest {
     @Rule
     public ActivityTestRule<ListaLeilaoActivity> activityTestRule = new ActivityTestRule<>
             (ListaLeilaoActivity.class, true, false);
-    private TesteLeilaoWebClient client = new TesteLeilaoWebClient();
+    private final TesteLeilaoWebClient client = new TesteLeilaoWebClient();
+    private final FormatadorDeMoeda formatadorDeMoeda = new FormatadorDeMoeda();
 
     @Before
     public void setup() throws IOException {
@@ -47,8 +50,13 @@ public class ListaLeilaoScreenTest {
     @Test
     public void deve_MostrarUmLeilaoCadastrado_QuandoCarregarUmLeilaoDaApi() throws IOException {
         tentaSalvarNaApi(new Leilao("Computador"));
+
         activityTestRule.launchActivity(new Intent());
+        String formatoEsperado = formatadorDeMoeda.formata(0.00);
+
         onView(allOf(withText("Computador"), withId(R.id.item_leilao_descricao)))
+                .check(matches(isDisplayed()));
+        onView(allOf(withText(formatoEsperado), withId(R.id.item_leilao_maior_lance)))
                 .check(matches(isDisplayed()));
     }
 
@@ -56,10 +64,10 @@ public class ListaLeilaoScreenTest {
     public void deve_MostrarDoisLeiloesCadastrados_QuandoCarregarDoisLeiloesDaApi() throws IOException {
         tentaSalvarNaApi(new Leilao("Carro"), new Leilao("Computador"));
         activityTestRule.launchActivity(new Intent());
-        onView(allOf(withText("Carro"), withId(R.id.item_leilao_descricao)))
-                .check(matches(isDisplayed()));
-        onView(allOf(withText("Computador"), withId(R.id.item_leilao_descricao)))
-                .check(matches(isDisplayed()));
+        onView(withId(R.id.lista_leilao_recyclerview)).check(matches(
+                leilaoApresentado(0, "Carro", 0.00)));
+        onView(withId(R.id.lista_leilao_recyclerview)).check(matches(
+                leilaoApresentado(1, "Computador", 0.00)));
     }
 
     private void tentaSalvarNaApi(Leilao... leiloes) throws IOException {
