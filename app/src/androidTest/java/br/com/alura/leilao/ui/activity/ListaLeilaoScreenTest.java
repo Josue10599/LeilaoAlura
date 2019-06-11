@@ -3,6 +3,8 @@ package br.com.alura.leilao.ui.activity;
 import android.content.Intent;
 import android.support.test.rule.ActivityTestRule;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -24,9 +26,23 @@ public class ListaLeilaoScreenTest {
             (ListaLeilaoActivity.class, true, false);
     private TesteLeilaoWebClient client = new TesteLeilaoWebClient();
 
+    @Before
+    public void setup() throws IOException {
+        tentaLimparBancoDeDadosDaApi();
+    }
+
+    @After
+    public void tearDown() throws IOException {
+        tentaLimparBancoDeDadosDaApi();
+    }
+
+    private void tentaLimparBancoDeDadosDaApi() throws IOException {
+        boolean bancoNaoFoiLimpo = !client.limpaBanco();
+        if (bancoNaoFoiLimpo) fail("Falha ao limpar banco!");
+    }
+
     @Test
     public void deve_MostrarUmLeilaoCadastrado_QuandoCarregarUmLeilaoDaApi() throws IOException {
-        tentaLimparBanco();
         tentaSalvarNaApi(new Leilao("Computador"));
         activityTestRule.launchActivity(new Intent());
         onView(withText("Computador")).check(matches(isDisplayed()));
@@ -34,7 +50,6 @@ public class ListaLeilaoScreenTest {
 
     @Test
     public void deve_MostrarDoisLeiloesCadastrados_QuandoCarregarDoisLeiloesDaApi() throws IOException {
-        tentaLimparBanco();
         tentaSalvarNaApi(new Leilao("Carro"), new Leilao("Computador"));
         activityTestRule.launchActivity(new Intent());
         onView(withText("Carro")).check(matches(isDisplayed()));
@@ -46,11 +61,6 @@ public class ListaLeilaoScreenTest {
             Leilao leilaoSalvo = client.salva(leilao);
             if (leilaoSalvo == null) fail("Falha ao salvar leilão");
         }
-    }
-
-    private void tentaLimparBanco() throws IOException {
-        boolean bancoNaoFoiLimpo = !client.limpaBanco();
-        if (bancoNaoFoiLimpo) fail("Falha ao limpar banco!");
     }
 
 }
