@@ -22,12 +22,14 @@ android {
     buildTypes {
         debug {
             buildConfigField('String', 'URL_BASE', '"http://172.18.245.236:8080/"')
+            buildConfigField('String', 'BANCO_DE_DADOS', '"leilao-db"')
         }
     }
     buildTypes {
         simulacao {
             initWith(buildTypes.debug)
             buildConfigField('String', 'URL_BASE', '"http://172.18.245.236:8081/"')
+            buildConfigField('String', 'BANCO_DE_DADOS', '"leilao-db-teste"')
         }
     }
 
