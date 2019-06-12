@@ -11,8 +11,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import br.com.alura.leilao.BaseTesteIntegracao;
 import br.com.alura.leilao.R;
-import br.com.alura.leilao.api.retrofit.client.TesteLeilaoWebClient;
 import br.com.alura.leilao.formatter.FormatadorDeMoeda;
 import br.com.alura.leilao.model.Leilao;
 
@@ -22,16 +22,14 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static br.com.alura.leilao.matchers.ViewMatchers.leilaoApresentado;
-import static junit.framework.Assert.fail;
 import static org.hamcrest.core.AllOf.allOf;
 
-public class ListaLeilaoScreenTest {
+public class ListaLeilaoScreenTest extends BaseTesteIntegracao {
 
+    private final FormatadorDeMoeda formatadorDeMoeda = new FormatadorDeMoeda();
     @Rule
     public ActivityTestRule<ListaLeilaoActivity> activityTestRule = new ActivityTestRule<>
             (ListaLeilaoActivity.class, true, false);
-    private final TesteLeilaoWebClient client = new TesteLeilaoWebClient();
-    private final FormatadorDeMoeda formatadorDeMoeda = new FormatadorDeMoeda();
 
     @Before
     public void setup() throws IOException {
@@ -41,11 +39,6 @@ public class ListaLeilaoScreenTest {
     @After
     public void tearDown() throws IOException {
         tentaLimparBancoDeDadosDaApi();
-    }
-
-    private void tentaLimparBancoDeDadosDaApi() throws IOException {
-        boolean bancoNaoFoiLimpo = !client.limpaBanco();
-        if (bancoNaoFoiLimpo) fail("Falha ao limpar banco!");
     }
 
     @Test
@@ -89,12 +82,4 @@ public class ListaLeilaoScreenTest {
                 .check(matches(leilaoApresentado(
                         9, "Calça Jeans", 0.00)));
     }
-
-    private void tentaSalvarNaApi(Leilao... leiloes) throws IOException {
-        for (Leilao leilao : leiloes) {
-            Leilao leilaoSalvo = client.salva(leilao);
-            if (leilaoSalvo == null) fail("Falha ao salvar leilão");
-        }
-    }
-
 }
